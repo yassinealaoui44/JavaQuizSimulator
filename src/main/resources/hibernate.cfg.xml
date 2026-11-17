@@ -7,23 +7,27 @@
 <hibernate-configuration>
     <session-factory>
 
-        <property name="hibernate.connection.driver_class">
-            org.postgresql.Driver
-        </property>
+        <!-- PostgreSQL connection -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/quiz_simulator</property>
+        <property name="hibernate.connection.username">postgres</property>
 
-        <property name="hibernate.connection.url">
-            jdbc:postgresql://localhost:5432/quiz_simulator
-        </property>
-
-        <property name="hibernate.connection.username">
-            postgres
-        </property>
-
+        <!-- Display generated SQL -->
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
 
-        <!-- Only test the connection; do not change tables yet -->
-        <property name="hibernate.hbm2ddl.auto">none</property>
+        <!-- Create missing tables and apply supported schema updates -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.halt_on_error">true</property>
+
+        <!-- Entity classes -->
+        <mapping class="com.quizsimulator.model.User"/>
+        <mapping class="com.quizsimulator.model.Professor"/>
+        <mapping class="com.quizsimulator.model.Student"/>
+        <mapping class="com.quizsimulator.model.Quiz"/>
+        <mapping class="com.quizsimulator.model.Question"/>
+        <mapping class="com.quizsimulator.model.QuizAssignment"/>
+        <mapping class="com.quizsimulator.model.StudentAnswer"/>
 
     </session-factory>
 </hibernate-configuration>

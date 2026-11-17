@@ -1,4 +1,6 @@
 package com.quizsimulator.model;
 
-public class Role {
+public enum Role {
+    PROFESSOR,
+    STUDENT
 }
