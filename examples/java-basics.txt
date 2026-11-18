@@ -1,0 +1,15 @@
+Q: Which keyword creates an object in Java?
+A) class
+B) new
+C) static
+D) void
+
+Q: Which type stores true or false?
+A) boolean
+B) int
+C) String
+
+Q: Which collection stores key-value pairs?
+A) List
+B) Set
+C) Map
