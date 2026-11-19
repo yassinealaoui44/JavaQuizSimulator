@@ -3,6 +3,7 @@ package com.quizsimulator.service;
 import com.quizsimulator.database.HibernateUtil;
 import com.quizsimulator.database.Transactions;
 
+import com.quizsimulator.model.Professor;
 import com.quizsimulator.model.Student;
 import com.quizsimulator.model.User;
 
@@ -31,6 +32,23 @@ public class AuthService {
             String email,
             String password
     ) {
+        return register(name, email, password, Student::new);
+    }
+
+    public Professor registerProfessor(
+            String name,
+            String email,
+            String password
+    ) {
+        return register(name, email, password, Professor::new);
+    }
+
+    private <T extends User> T register(
+            String name,
+            String email,
+            String password,
+            AccountFactory<T> createAccount
+    ) {
 
         String validName = AccountRules.name(name);
         String validEmail = AccountRules.email(email);
@@ -45,15 +63,9 @@ public class AuthService {
                     );
                 }
 
-                Student student = new Student(
-                        validName,
-                        validEmail,
-                        hash
-                );
-
-                users.save(session, student);
-
-                return student;
+                T account = createAccount.create(validName, validEmail, hash);
+                users.save(session, account);
+                return account;
             });
 
         } catch (ConstraintViolationException exception) {
@@ -68,6 +80,11 @@ public class AuthService {
 
             throw exception;
         }
+    }
+
+    @FunctionalInterface
+    private interface AccountFactory<T extends User> {
+        T create(String name, String email, String hash);
     }
 
     public User login(String email, String password) {

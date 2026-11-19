@@ -1,17 +1,41 @@
 package com.quizsimulator;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import com.quizsimulator.controller.AuthController;
+import com.quizsimulator.controller.ProfessorController;
+import com.quizsimulator.controller.StudentController;
+import com.quizsimulator.database.HibernateUtil;
+import com.quizsimulator.service.AuthService;
+import com.quizsimulator.service.GradingService;
+import com.quizsimulator.service.QuizService;
+import com.quizsimulator.view.AuthView;
+import com.quizsimulator.view.ProfessorView;
+import com.quizsimulator.view.StudentView;
+import org.hibernate.SessionFactory;
+
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        SessionFactory factory;
+        try {
+            factory = HibernateUtil.getSessionFactory();
+        } catch (ExceptionInInitializerError exception) {
+            System.err.println("Could not start the database connection. "
+                    + "Check that PostgreSQL is running, quiz_simulator exists, and DB_PASSWORD is set.");
+            return;
+        }
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        try (Scanner scanner = new Scanner(System.in)) {
+            ProfessorController professorController =
+                    new ProfessorController(new ProfessorView(scanner), new QuizService(factory));
+            StudentController studentController =
+                    new StudentController(new StudentView(scanner), new GradingService(factory));
+            AuthController authController = new AuthController(
+                    new AuthView(scanner), new AuthService(factory), professorController, studentController
+            );
+            authController.run();
+        } finally {
+            HibernateUtil.shutdown();
         }
     }
 }
